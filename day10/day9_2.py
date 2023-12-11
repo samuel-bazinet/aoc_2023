@@ -40,7 +40,7 @@ def coord_str(coord: Tuple[int, int]) -> str:
     return f'{str(coord[0]).zfill(3)}|{str(coord[1]).zfill(3)}'
 
 
-with open('practice4.txt', 'r') as file:
+with open('input.txt', 'r') as file:
     lines = file.readlines()
     c_pos_str = '000|000'
     s_pos = (0, 0)
@@ -103,35 +103,36 @@ with open('practice4.txt', 'r') as file:
 
     #print(vertices)
 
-    enclosed = 0
+    h_enclosed = []
 
     for i in range(max_y):
-        l_cross = 0
+        is_enclosed = False
+        f_e = False
+        l_e = False
         for j in range(max_x):
             if (i, j) in vertices:
-                if (lines[i][j] == 'S' and lines[i][j+1] == '-') or lines[i][j] in ['F', 'L']:
-                    n_lines[i] += 1
-                elif lines[i][j] in ['J', '7']:
-                    n_lines[i] += 1
-                elif lines[i][j] == '|':
-                    n_lines[i] += 1
-                continue
-        for j in range(max_x):
-            if (i, j) in vertices:
-                print('ol', i, j)
-                if (lines[i][j] == 'S' and lines[i][j+1] == '-') or lines[i][j] in ['F', 'L']:
-                    l_cross += 1
-                elif lines[i][j] in ['J', '7']:
-                    l_cross += 1
-                elif lines[i][j] == '|':
-                    l_cross += 1
-                continue
-            else:
-                if l_cross % 2 != 0 and l_cross != n_lines[i]:
-                    if n_lines[i]//2 % 2 == 0:
-                        print(i, j)
-                        enclosed += 1
+                if lines[i][j] in ['|', 'S']:
+                    is_enclosed = not is_enclosed
+                elif lines[i][j] == 'F':
+                    f_e = True
+                elif lines[i][j] == 'L':
+                    l_e = True
+                elif lines[i][j] == 'J':
+                    if f_e:
+                        f_e = False
+                        is_enclosed = not is_enclosed
                     else:
-                        if not (l_cross +1) % 4 == 0:
-                            enclosed += 1
-    print(enclosed)
+                        l_e = False
+                elif lines[i][j] == '7':
+                    if f_e:
+                        f_e = False
+                    else:
+                        l_e = False
+                        is_enclosed = not is_enclosed
+
+            else:
+               if is_enclosed:
+                   h_enclosed.append((i, j))
+    
+    print(h_enclosed)
+    print(len(h_enclosed))
